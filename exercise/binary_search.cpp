@@ -16,6 +16,7 @@ int main(){
     return 0;
 }
 
+// [start, end)
 int binary_search(int nums[], int start, int end, int elem){
     int L = start;
     int R = end - 1;
