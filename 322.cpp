@@ -1,15 +1,19 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
 class Solution {
 public:
+    int maxValue = 100000;
+
     vector<vector<int> > save;
     
+    //第二个参数是进入index之前的剩余钱数
     int solve(int index, int am, vector<int>& coins){
         if(am < 0){
-            return 1000000;
+            return maxValue;
         }
         if(am == 0){
             return 0;
@@ -17,26 +21,50 @@ public:
         if(save[index][am] > -10){
             return save[index][am];
         }
-        int min = 10000000;
+
+        int min = 0x7fffffff;
         for(int i=0; i<coins.size(); i++){
             int a = solve(i, am-coins[i], coins) + 1;
             if(min > a){
                 min = a;
             }
         }
-        
         save[index][am] = min;
+
+        return save[index][am];
+    }
+
+    int solve_outer(int am, vector<int>& coins){
+        int min = 0x7fffffff;
+        for(int i=0; i<coins.size(); i++){
+            int a = solve(i, am-coins[i], coins) + 1;
+            if(a < min){
+                min = a;
+            }
+        }
+
         return min;
     }
     
-    int coinChange(vector<int>& coins, int amount) {
+    int coinChange(vector<int>& coins, int am) {
         vector<int> line(amount+1, -10);
         save.assign(coins.size(), line);
-        int output = solve(0, amount, coins);
-        if(output > 1000000){
+
+        int answer = solve_outer(amount, coins);
+        if(answer >= maxValue){
             return -1;
         }else{
-            return output;
+            return answer;
+        }
+
+        for(int i=0; i<coins.size(); i++){
+            for(int amount=0; amount<=am; amount++){
+                int min_value = 0x7fffffff;
+                if(amount-coins[i] >= 0){
+                    min_value = min(save[i][amount-coins[i]] + 1, min_value);
+                }
+                save[amount] = save[amount-coins[i]] + 1;
+            }
         }
     }
 };
