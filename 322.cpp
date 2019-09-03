@@ -9,6 +9,7 @@ public:
     int maxValue = 100000;
 
     vector<vector<int> > save;
+    int maxValue = 100000;
     
     //第二个参数是进入index之前的剩余钱数
     int solve(int index, int am, vector<int>& coins){
@@ -24,9 +25,21 @@ public:
 
         int min = 0x7fffffff;
         for(int i=0; i<coins.size(); i++){
-            int a = solve(i, am-coins[i], coins) + 1;
-            if(min > a){
-                min = a;
+            save[i][0] = 0;
+            for(int n=i; n<coins.size(); n++){
+                save[i][coins[n]] = 1;
+            }
+        }
+        for (int index = 0; index < coins.size()-1; index++)
+        {
+            for(int amount = 0; amount <= am; amount++){
+                    if(amount+coins[index] <= am){
+                        if(index+1 > coins.size()){
+                            save[index][amount+coins[index]] = min(save[index][amount]+1, maxValue);
+                        }else{
+                            save[index][amount+coins[index]] = min(save[index][amount]+1, save[index+1][amount + coins[index]]);
+                        }
+                    }
             }
         }
         save[index][am] = min;
