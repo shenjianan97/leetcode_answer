@@ -1,29 +1,25 @@
 class Solution {
 public:
-    vector<vector<int>> ans;
+    vector<vector<int> > results;
+    vector<int> temp;
     
-    int ans_one[100];
-    
-    
-    void robot(vector<int>& candidates, int target, int num, int pos){
+    void generator(int idx, vector<int>& candidates, int target){
         if(target < 0)
             return;
         if(target == 0){
-            vector<int> tmp;
-            for(int i=0; i<num; i++){
-                tmp.push_back(ans_one[i]);
-            }
-            ans.push_back(tmp);
+            results.push_back(temp);
+            return;
         }
-        for(int i=pos; i<candidates.size(); i++){
-            ans_one[num] = candidates[i];
-            robot(candidates, target-candidates[i], num+1, i);
+        for(int i=idx; i<candidates.size(); i++){
+            temp.push_back(candidates[i]);
+            generator(i, candidates, target-candidates[i]);
+            temp.pop_back();
         }
     }
     
     vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        robot(candidates, target, 0, 0);
+        generator(0, candidates, target);
         
-        return ans;
+        return results;
     }
 };
